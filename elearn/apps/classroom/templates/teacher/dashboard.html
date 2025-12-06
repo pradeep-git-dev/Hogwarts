@@ -3,14 +3,15 @@
 {% block title %}Teacher Dashboard{% endblock title %}
 
 {% block content %}
-<div class="flex">
-    <aside class="w-64 min-h-screen bg-sidebar-DEFAULT text-sidebar-foreground p-4 border-r border-sidebar-border">
-        <h3 class="text-2xl font-bold text-sidebar-primary-foreground mb-8">Pearlsquare</h3>
+<div class="flex min-h-screen">
+    <aside class="w-64 min-h-screen bg-sidebar-DEFAULT text-sidebar-foreground p-4 border-r border-sidebar-border shadow-md">
+        <h3 class="text-2xl font-bold text-primary-DEFAULT mb-8">Pearlsquare</h3>
         <nav class="space-y-2">
             <a href="{% url 'teacher_dashboard' %}" class="flex items-center p-3 rounded-lg bg-sidebar-accent text-sidebar-accent-foreground font-semibold">Dashboard</a>
             <a href="{% url 'teacher_student_list' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Students</a>
             <a href="{% url 'teacher_quiz_list' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Quizzes</a>
             <a href="{% url 'leaderboard' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Leaderboard</a>
+            <a href="{% url 'profile' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Profile</a>
         </nav>
     </aside>
 
@@ -38,7 +39,7 @@
                 <p class="text-3xl font-extrabold text-accent-DEFAULT mt-1">{{ avg_score|default:"88.5" }}%</p>
             </div>
             <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
-                <p class="text-sm text-muted-foreground">Total Points Awarded</p>
+                <p class="text-sm text-muted-foreground">Points Awarded</p>
                 <p class="text-3xl font-extrabold text-muted-foreground mt-1">{{ total_points|default:"25,000" }}</p>
             </div>
         </div>
@@ -46,14 +47,14 @@
         <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
             <h2 class="text-2xl font-semibold mb-4 text-foreground">Latest Quiz Results</h2>
             <ul class="space-y-3">
-                <li class="flex justify-between items-center p-3 border-b border-border/50">
-                    <span class="font-medium">Calculus Midterm Quiz</span>
-                    <span class="text-sm text-accent-DEFAULT font-bold">75% Average</span>
+                {% for result in latest_results %}
+                <li class="flex justify-between items-center p-3 border-b border-border/50 hover:bg-muted-DEFAULT/50 rounded-md transition">
+                    <span class="font-medium">{{ result.quiz_name|default:"Calculus Midterm Quiz" }}</span>
+                    <span class="text-sm text-accent-DEFAULT font-bold">{{ result.average_score|default:"75" }}% Average</span>
                 </li>
-                <li class="flex justify-between items-center p-3 border-b border-border/50">
-                    <span class="font-medium">Python Basics</span>
-                    <span class="text-sm text-primary-DEFAULT font-bold">92% Average</span>
-                </li>
+                {% empty %}
+                <li class="text-center py-4 text-muted-foreground">No recent quiz submissions.</li>
+                {% endfor %}
             </ul>
         </div>
     </main>

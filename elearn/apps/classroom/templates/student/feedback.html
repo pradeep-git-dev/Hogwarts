@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}My Feedback{% endblock title %}
+
+{% block content %}
+<div class="flex min-h-screen">
+    <main class="flex-1 p-8">
+        <h1 class="text-4xl font-extrabold text-primary-DEFAULT mb-8">
+            Feedback from Teachers
+        </h1>
+
+        <div class="grid grid-cols-1 gap-6">
+            {% for feedback in recent_feedback %}
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-xl font-semibold text-foreground">
+                        Feedback on: {{ feedback.item|default:"Essay Submission" }}
+                    </h2>
+                    <span class="text-sm font-medium px-3 py-1 rounded-full bg-muted-DEFAULT text-muted-foreground">
+                        {{ feedback.date|default:"2 days ago" }}
+                    </span>
+                </div>
+
+                <blockquote class="border-l-4 border-secondary-DEFAULT pl-4 py-2 italic text-muted-foreground">
+                    "{{ feedback.comment|default:"You demonstrated a strong understanding of the core concepts, particularly in the section on data structures. However, remember to properly cite all external resources." }}"
+                </blockquote>
+
+                <div class="mt-4 flex justify-between items-center text-sm">
+                    <span class="font-medium text-primary-DEFAULT">
+                        Teacher: {{ feedback.teacher.name|default:"Ms. Chen" }}
+                    </span>
+                    <a href="{% url 'feedback_detail' feedback.id|default:789 %}" class="text-primary-DEFAULT hover:underline font-medium">
+                        View Full Details & Grade
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="bg-card text-card-foreground p-8 rounded-lg border shadow-card text-center">
+                <p class="text-lg text-muted-foreground">You have no recent feedback. Keep up the great work!</p>
+            </div>
+            {% endfor %}
+
+            <div class="mt-8">
+                <h2 class="text-2xl font-semibold mb-4 text-foreground">Have a Question?</h2>
+                <a href="#" class="inline-flex items-center justify-center rounded-lg text-sm font-medium bg-accent-DEFAULT text-accent-foreground shadow hover:bg-accent/90 h-10 px-4">
+                    Send General Inquiry
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock content %}

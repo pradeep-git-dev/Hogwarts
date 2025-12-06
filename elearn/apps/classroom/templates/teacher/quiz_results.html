@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiz Results: {{ quiz.name|default:"Quiz" }}{% endblock title %}
+
+{% block content %}
+<div class="flex min-h-screen">
+    <main class="flex-1 p-8">
+        <h1 class="text-4xl font-extrabold text-primary-DEFAULT mb-3">
+            Results: {{ quiz.name|default:"Python Basics" }}
+        </h1>
+        <p class="text-lg text-muted-foreground mb-8">
+            Taken by: <span class="font-semibold">{{ student_count|default:"28" }} students</span>
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Average Score</p>
+                <p class="text-4xl font-extrabold text-primary-DEFAULT mt-1">{{ avg_score|default:"85.2" }}%</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Highest Score</p>
+                <p class="text-4xl font-extrabold text-secondary-DEFAULT mt-1">{{ max_score|default:"100" }}%</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Failing Scores (< 60%)</p>
+                <p class="text-4xl font-extrabold text-destructive-DEFAULT mt-1">{{ failing_count|default:"3" }}</p>
+            </div>
+        </div>
+
+        <div class="bg-card text-card-foreground rounded-xl shadow-card overflow-hidden border">
+            <h2 class="text-2xl font-semibold p-6 text-foreground border-b border-border">Individual Student Results</h2>
+            <table class="min-w-full divide-y divide-border">
+                <thead class="bg-muted-DEFAULT">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Student</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Score (%)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Time Taken</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border">
+                    {% for result in student_results %}
+                    <tr class="hover:bg-muted-DEFAULT/50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ result.student.name|default:"Emily Smith" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-bold {% if result.score >= 80 %}text-primary-DEFAULT{% elif result.score >= 60 %}text-accent-DEFAULT{% else %}text-destructive-DEFAULT{% endif %}">{{ result.score|default:"92" }}%</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{{ result.time_taken|default:"35 min" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{% url 'view_student_submission' result.id|default:1 %}" class="text-primary-DEFAULT hover:underline font-medium">Review Submission</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-8 text-muted-foreground">No submissions recorded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock content %}

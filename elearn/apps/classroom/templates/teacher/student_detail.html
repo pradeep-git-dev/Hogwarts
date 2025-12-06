@@ -1,52 +1,61 @@
 {% extends 'base.html' %}
 
-{% block title %}Student Dashboard{% endblock title %}
+{% block title %}Student: {{ student.name|default:"Alex Johnson" }}{% endblock title %}
 
 {% block content %}
-<div class="flex">
+<div class="flex min-h-screen">
     <main class="flex-1 p-8">
-        <div class="flex justify-between items-center mb-10">
-            <h1 class="text-4xl font-extrabold text-primary-DEFAULT">
-                Welcome, {{ user.first_name|default:"Student" }}!
-            </h1>
-            <p class="text-lg font-semibold text-secondary-DEFAULT">Current Rank: #{{ user_rank|default:"3" }}</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
-                <p class="text-sm text-muted-foreground">Total Points</p>
-                <p class="text-5xl font-extrabold text-secondary-DEFAULT mt-2">{{ user.points|default:"8,750" }}</p>
+        <a href="{% url 'teacher_student_list' %}" class="text-sm text-muted-foreground hover:text-primary-DEFAULT mb-4 inline-block">&larr; Back to Student List</a>
+        
+        <h1 class="text-4xl font-extrabold text-primary-DEFAULT mb-8">
+            Student Profile: {{ student.name|default:"Alex Johnson" }}
+        </h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                    <p class="text-sm text-muted-foreground">Total Points Earned</p>
+                    <p class="text-5xl font-extrabold text-secondary-DEFAULT mt-2">{{ student.points|default:"3,450" }}</p>
+                    <p class="text-sm text-muted-foreground mt-2">Current Rank: #{{ student.rank|default:"15" }}</p>
+                </div>
+                
+                <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card space-y-3">
+                    <h3 class="text-xl font-semibold mb-2 text-foreground">Contact & Details</h3>
+                    <p class="text-sm"><span class="font-medium text-primary-DEFAULT">Email:</span> {{ student.email|default:"alex@school.com" }}</p>
+                    <p class="text-sm"><span class="font-medium text-primary-DEFAULT">Joined:</span> {{ student.joined_date|default:"2023-09-01" }}</p>
+                    <p class="text-sm"><span class="font-medium text-primary-DEFAULT">Avg. Score:</span> <span class="font-bold text-accent-DEFAULT">{{ student.avg_score|default:"82.5" }}%</span></p>
+                    <button class="w-full inline-flex items-center justify-center rounded-lg text-sm font-medium bg-primary/10 text-primary-DEFAULT border border-primary/20 hover:bg-primary/20 h-9 px-4 mt-4">
+                        Send Message
+                    </button>
+                </div>
             </div>
-            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
-                <p class="text-sm text-muted-foreground">Badges Earned</p>
-                <p class="text-5xl font-extrabold text-accent-DEFAULT mt-2">{{ badge_count|default:"5" }}</p>
-            </div>
-            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
-                <p class="text-sm text-muted-foreground">Upcoming Quiz</p>
-                <p class="text-xl font-bold text-primary-DEFAULT mt-2">{{ next_quiz.name|default:"World History Exam" }}</p>
-                <p class="text-sm text-muted-foreground">{{ next_quiz.date|default:"Tomorrow at 10:00 AM" }}</p>
-            </div>
-        </div>
 
-        <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card mb-10">
-            <h2 class="text-2xl font-semibold mb-4 text-foreground">Top 5 Leaderboard</h2>
-            <ul class="space-y-3">
-                {% for player in top_players %}
-                <li class="flex justify-between items-center p-3 border-b border-border/50">
-                    <span class="font-medium {% if player.is_current_user %}text-primary-DEFAULT font-bold{% endif %}">
-                        #{{ forloop.counter }} {{ player.username|default:"Alice" }}
-                    </span>
-                    <span class="text-sm text-secondary-DEFAULT font-bold">{{ player.points|default:"9,100" }} pts</span>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
+                    <h2 class="text-2xl font-semibold mb-4 text-foreground">Recent Quiz History</h2>
+                    <ul class="divide-y divide-border">
+                        {% for quiz in recent_quizzes %}
+                        <li class="flex justify-between items-center py-3">
+                            <span class="font-medium">{{ quiz.name|default:"Midterm Geometry" }}</span>
+                            <span class="text-sm font-bold {% if quiz.score >= 80 %}text-primary-DEFAULT{% elif quiz.score >= 60 %}text-accent-DEFAULT{% else %}text-destructive-DEFAULT{% endif %}">
+                                {{ quiz.score|default:"88" }}%
+                            </span>
+                        </li>
+                        {% empty %}
+                        <li class="text-center py-4 text-muted-foreground">No recent quiz records available.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-        <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
-            <h2 class="text-2xl font-semibold mb-4 text-foreground">Recent Feedback</h2>
-            <p class="text-muted-foreground">
-                **"Excellent work on your last assignment! Keep up the focus."** - Mr. Smith
-            </p>
+                <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
+                    <h2 class="text-2xl font-semibold mb-4 text-foreground">Teacher Feedback Log</h2>
+                    <textarea placeholder="Add new private feedback for this student..." rows="3"
+                              class="w-full p-3 border border-input rounded-md bg-background mb-4 focus:ring-2 focus:ring-ring focus:border-ring transition"></textarea>
+                    <button class="inline-flex items-center justify-center rounded-lg text-sm font-medium bg-secondary-DEFAULT text-secondary-foreground hover:bg-secondary/90 h-9 px-4">
+                        Save Feedback
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
 </div>

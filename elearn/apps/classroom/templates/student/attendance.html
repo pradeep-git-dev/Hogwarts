@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Attendance{% endblock title %}
+
+{% block content %}
+<div class="flex min-h-screen">
+    <main class="flex-1 p-8">
+        <h1 class="text-4xl font-extrabold text-primary-DEFAULT mb-8">
+            My Attendance Record
+        </h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Overall Attendance Rate</p>
+                <p class="text-5xl font-extrabold text-primary-DEFAULT mt-2">{{ attendance_rate|default:"95" }}%</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Classes Absent</p>
+                <p class="text-5xl font-extrabold text-destructive-DEFAULT mt-2">{{ absences|default:"2" }}</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Points for Consistency</p>
+                <p class="text-5xl font-extrabold text-accent-DEFAULT mt-2">{{ attendance_points|default:"500" }}</p>
+            </div>
+        </div>
+
+        <div class="bg-card text-card-foreground rounded-xl shadow-card overflow-hidden">
+            <table class="min-w-full divide-y divide-border">
+                <thead class="bg-muted-DEFAULT">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Course</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Notes</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border">
+                    {% for record in attendance_records %}
+                    <tr class="hover:bg-muted-DEFAULT/50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ record.date|default:"2023-10-20" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{{ record.course|default:"Calculus I" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if record.status == 'P' %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary/10 text-primary-DEFAULT">Present</span>
+                            {% elif record.status == 'A' %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-destructive/10 text-destructive-DEFAULT">Absent</span>
+                            {% else %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-accent/10 text-accent-DEFAULT">Late</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{{ record.notes|default:"" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-8 text-muted-foreground">No attendance records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock content %}

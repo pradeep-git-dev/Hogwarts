@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard{% endblock title %}
+
+{% block content %}
+<div class="flex min-h-screen">
+    <aside class="w-64 bg-sidebar-DEFAULT text-sidebar-foreground p-4 border-r border-sidebar-border shadow-md">
+        <h3 class="text-2xl font-bold text-primary-DEFAULT mb-8">Pearlsquare</h3>
+        <nav class="space-y-2">
+            <a href="{% url 'student_dashboard' %}" class="flex items-center p-3 rounded-lg bg-sidebar-accent text-sidebar-accent-foreground font-semibold">Dashboard</a>
+            <a href="{% url 'student_quiz_list' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">My Quizzes</a>
+            <a href="{% url 'student_attendance' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Attendance</a>
+            <a href="{% url 'student_feedback' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Feedback</a>
+            <a href="{% url 'leaderboard' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Leaderboard</a>
+            <a href="{% url 'profile' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Profile</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-4xl font-extrabold text-primary-DEFAULT">
+                Welcome back, {{ user.first_name|default:"Student" }}!
+            </h1>
+            <p class="text-lg font-semibold text-secondary-DEFAULT">Current Rank: #{{ user_rank|default:"3" }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Total Points</p>
+                <p class="text-5xl font-extrabold text-secondary-DEFAULT mt-2">{{ user.points|default:"8,750" }}</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Badges Earned</p>
+                <p class="text-5xl font-extrabold text-accent-DEFAULT mt-2">{{ badge_count|default:"5" }}</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Quiz Avg. Score</p>
+                <p class="text-5xl font-extrabold text-primary-DEFAULT mt-2">{{ avg_score|default:"91" }}%</p>
+            </div>
+        </div>
+
+        <div class="bg-card text-card-foreground p-8 rounded-xl shadow-glow border border-primary/20 mb-10 flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-primary-DEFAULT mb-2">Quiz Due Soon!</h2>
+                <p class="text-muted-foreground">**{{ next_quiz.name|default:"Introduction to Programming" }}** is due on {{ next_quiz.due_date|default:"Oct 25" }}.</p>
+            </div>
+            <a href="{% url 'student_take_quiz' next_quiz.id|default:123 %}" class="inline-flex items-center justify-center rounded-lg text-base font-semibold transition-colors bg-secondary-DEFAULT text-secondary-foreground shadow-accent hover:bg-secondary/90 h-12 px-6">
+                Start Quiz Now
+            </a>
+        </div>
+    </main>
+</div>
+{% endblock content %}

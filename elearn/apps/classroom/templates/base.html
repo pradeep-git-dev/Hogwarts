@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Pearlsquare - Gamified Learning Platform{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+      @layer base {
+        :root {
+          /* Light Mode Design System Variables */
+          --background: 45 30% 98%;
+          --foreground: 200 25% 15%;
+          --card: 0 0% 100%;
+          --card-foreground: 200 25% 15%;
+          --primary: 168 65% 38%;
+          --primary-foreground: 0 0% 100%;
+          --secondary: 15 85% 60%;
+          --secondary-foreground: 0 0% 100%;
+          --muted: 160 20% 92%;
+          --muted-foreground: 200 15% 45%;
+          --accent: 42 92% 55%;
+          --accent-foreground: 200 25% 15%;
+          --destructive: 0 84% 60%;
+          --destructive-foreground: 0 0% 100%;
+          --border: 160 15% 88%;
+          --input: 160 15% 88%;
+          --ring: 168 65% 38%;
+          --radius: 0.75rem;
+
+          /* Sidebar Tokens */
+          --sidebar-background: 0 0% 98%;
+          --sidebar-foreground: 240 5.3% 26.1%;
+          --sidebar-accent: 240 4.8% 95.9%;
+          --sidebar-accent-foreground: 240 5.9% 10%;
+        }
+
+        .dark {
+          /* Dark Mode Variables */
+          --background: 200 25% 10%;
+          --foreground: 45 30% 95%;
+          --card: 200 20% 14%;
+          --card-foreground: 45 30% 95%;
+          --primary: 168 55% 50%;
+          --secondary: 15 80% 55%;
+          --muted: 200 20% 18%;
+          --accent: 42 85% 55%;
+          --border: 200 20% 22%;
+          --input: 200 20% 22%;
+          --ring: 168 55% 50%;
+
+          /* Dark Mode Sidebar Tokens */
+          --sidebar-background: 240 5.9% 10%;
+          --sidebar-foreground: 240 4.8% 95.9%;
+          --sidebar-accent: 240 3.7% 15.9%;
+          --sidebar-accent-foreground: 240 4.8% 95.9%;
+        }
+
+        * { border-color: hsl(var(--border)); }
+        body {
+          background-color: hsl(var(--background));
+          color: hsl(var(--foreground));
+          font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+      }
+      /* Custom utilities (e.g., text-gradient-primary) are inherited from index.css logic */
+    </style>
+
+    <script>
+        tailwind.config = {
+            darkMode: ["class"],
+            theme: {
+                extend: {
+                    fontFamily: { sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"] },
+                    colors: {
+                        border: "hsl(var(--border))", input: "hsl(var(--input))", ring: "hsl(var(--ring))",
+                        background: "hsl(var(--background))", foreground: "hsl(var(--foreground))",
+                        primary: { DEFAULT: "hsl(var(--primary))", foreground: "hsl(var(--primary-foreground))" },
+                        secondary: { DEFAULT: "hsl(var(--secondary))", foreground: "hsl(var(--secondary-foreground))" },
+                        muted: { DEFAULT: "hsl(var(--muted))", foreground: "hsl(var(--muted-foreground))" },
+                        accent: { DEFAULT: "hsl(var(--accent))", foreground: "hsl(var(--accent-foreground))" },
+                        card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
+                        sidebar: {
+                            DEFAULT: "hsl(var(--sidebar-background))", foreground: "hsl(var(--sidebar-foreground))",
+                            accent: "hsl(var(--sidebar-accent))", "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+                        },
+                    },
+                    borderRadius: { lg: "var(--radius)", md: "calc(var(--radius) - 2px)", sm: "calc(var(--radius) - 4px)" },
+                    // Keyframes and Animations (float, pulse-glow, etc.) are included here as in previous response
+                    // ...
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen">
+    {% block content %}
+    {% endblock content %}
+
+    {% block extra_js %}
+    {% endblock extra_js %}
+</body>
+</html>

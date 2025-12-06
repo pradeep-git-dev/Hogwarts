@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Quiz Questions: {{ quiz.name|default:"New Quiz" }}{% endblock title %}
+
+{% block content %}
+<div class="flex min-h-screen">
+    <main class="flex-1 p-8">
+        <h1 class="text-4xl font-extrabold text-primary-DEFAULT mb-3">
+            Questions for: {{ quiz.name|default:"Chapter Review Quiz" }}
+        </h1>
+        <p class="text-lg text-muted-foreground mb-8">
+            Total Questions: <span class="font-semibold">{{ quiz.question_count|default:"3" }}</span> | Total Points: <span class="font-semibold">{{ quiz.total_points|default:"30" }}</span>
+        </p>
+
+        <div class="space-y-6 max-w-4xl">
+            {% for question in quiz.questions %}
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card space-y-4">
+                <div class="flex justify-between items-start">
+                    <h3 class="text-xl font-semibold text-foreground">
+                        Question {{ forloop.counter }} - {{ question.type|default:"Multiple Choice" }}
+                    </h3>
+                    <span class="text-secondary-DEFAULT font-bold">{{ question.points|default:"10" }} Pts</span>
+                </div>
+                
+                <textarea placeholder="Enter question text..." rows="2"
+                          class="w-full p-3 border border-input rounded-md bg-background focus:ring-2 focus:ring-ring focus:border-ring transition">{{ question.text|default:"What is the capital of France?" }}</textarea>
+
+                <div class="space-y-2 border-t border-border pt-4">
+                    <h4 class="font-medium text-sm text-muted-foreground">Options / Correct Answer:</h4>
+                    {% for choice in question.choices %}
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" {% if choice.is_correct %}checked{% endif %} id="choice-{{ choice.id }}" class="rounded text-primary-DEFAULT focus:ring-primary-DEFAULT">
+                        <input type="text" value="{{ choice.text|default:'Paris (Correct)' }}"
+                               class="flex-1 h-8 px-2 border border-input rounded-md bg-background text-sm">
+                        <button class="text-destructive-DEFAULT hover:text-destructive/80 text-xs">Remove</button>
+                    </div>
+                    {% endfor %}
+                    <button class="mt-2 text-primary-DEFAULT hover:underline text-sm">+ Add Option</button>
+                </div>
+
+                <div class="border-t border-border pt-4 flex justify-end space-x-3">
+                    <button class="text-destructive-DEFAULT hover:underline text-sm">Delete Question</button>
+                    <button class="inline-flex items-center justify-center rounded-lg text-sm font-medium bg-primary-DEFAULT text-primary-foreground hover:bg-primary/90 h-8 px-3">
+                        Save Question
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-8 bg-card rounded-lg border shadow-card">
+                <p class="text-lg text-muted-foreground">This quiz currently has no questions.</p>
+            </div>
+            {% endfor %}
+
+            <button class="w-full inline-flex items-center justify-center rounded-lg text-base font-semibold transition-colors bg-accent-DEFAULT text-accent-foreground shadow hover:bg-accent/90 h-11 px-6">
+                + Add New Question
+            </button>
+        </div>
+    </main>
+</div>
+{% endblock content %}
