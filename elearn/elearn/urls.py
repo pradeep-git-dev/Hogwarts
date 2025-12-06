@@ -25,4 +25,3 @@ urlpatterns = [
     path('quiz/', include('quiz.urls')),
 ]
 
-]

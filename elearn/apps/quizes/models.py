@@ -1,6 +1,7 @@
 from django.db import models
 from django.db import models
-from accounts.models import User
+from django.contrib.auth.models import User
+
 
 QUESTION_TYPES = (
     ('mcq', 'Multiple Choice'),

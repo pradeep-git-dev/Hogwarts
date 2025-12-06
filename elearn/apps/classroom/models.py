@@ -10,7 +10,7 @@ class Classroom(models.Model):
         ('inactive', 'Inactive'),
     )
     
-    teacher = models.ForeignKey(User, on_delete=models.CASCAD`  E, related_name='classrooms_taught')
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='classrooms_taught')
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     code = models.CharField(max_length=10, unique=True)

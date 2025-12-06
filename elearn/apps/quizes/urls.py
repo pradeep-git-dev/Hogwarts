@@ -13,5 +13,5 @@ urlpatterns = [
     path('<int:quiz_id>/responses/', views.teacher_view_responses, name='teacher_view_responses'),
 ]
 
-]
+
 
