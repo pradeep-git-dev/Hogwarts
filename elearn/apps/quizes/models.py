@@ -53,48 +53,6 @@ class Question(models.Model):
 
 
 
-class StudentAnswer(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    selected_answer = models.CharField(max_length=300)
-    is_correct = models.BooleanField(default=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-
-class QuizResult(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    score = models.IntegerField()
-    total = models.IntegerField()
-    submitted_at = models.DateTimeField(auto_now_add=True)
-from django.db import models
-from django.contrib.auth.models import User
-
-
-class Question(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-
-    text = models.CharField(max_length=300)
-
-    # Optional MCQ fields
-    option_a = models.CharField(max_length=200, blank=True, null=True)
-    option_b = models.CharField(max_length=200, blank=True, null=True)
-    option_c = models.CharField(max_length=200, blank=True, null=True)
-    option_d = models.CharField(max_length=200, blank=True, null=True)
-
-    # For MCQ or fill-in-the-blank
-    correct_answer = models.CharField(max_length=200)
-
-    QUESTION_TYPES = (
-        ('mcq', 'Multiple Choice'),
-        ('text', 'Written Answer'),
-    )
-    question_type = models.CharField(max_length=10, choices=QUESTION_TYPES, default='mcq')
-
-    def __str__(self):
-        return self.text
-
-
 class StudentResponse(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
@@ -106,6 +64,16 @@ class StudentResponse(models.Model):
     def __str__(self):
         return f"{self.student.username} - {self.question}"
 
+class QuizResult(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    score = models.IntegerField()
+    total = models.IntegerField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+from django.db import models
+from django.contrib.auth.models import User
+
+
 
 class QuizScore(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -115,4 +83,3 @@ class QuizScore(models.Model):
 
     def __str__(self):
         return f"{self.student.username} - {self.score}"
-
