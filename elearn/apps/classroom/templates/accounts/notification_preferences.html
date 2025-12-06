@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Notification Preferences{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-8 max-w-3xl mx-auto">
+
+    <h1 class="text-3xl font-bold mb-6">Notification Settings</h1>
+
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="p-3 bg-primary text-white rounded-lg mb-3">{{ msg }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" class="bg-card p-6 rounded-xl shadow">
+        {% csrf_token %}
+
+        <div class="space-y-4">
+
+            <label class="flex items-center gap-3">
+                <input type="checkbox" name="quiz_reminders" {% if preferences.quiz_reminders %}checked{% endif %}>
+                Quiz Reminders
+            </label>
+
+            <label class="flex items-center gap-3">
+                <input type="checkbox" name="class_updates" {% if preferences.class_updates %}checked{% endif %}>
+                Classroom Updates
+            </label>
+
+            <label class="flex items-center gap-3">
+                <input type="checkbox" name="discussion_replies" {% if preferences.discussion_replies %}checked{% endif %}>
+                Discussion Replies
+            </label>
+
+            <label class="flex items-center gap-3">
+                <input type="checkbox" name="achievement_notifications" {% if preferences.achievement_notifications %}checked{% endif %}>
+                Achievement Notifications
+            </label>
+
+            <label class="flex items-center gap-3">
+                <input type="checkbox" name="email_notifications" {% if preferences.email_notifications %}checked{% endif %}>
+                Email Notifications
+            </label>
+
+        </div>
+
+        <button class="mt-6 w-full bg-primary p-3 rounded-lg text-white font-semibold">
+            Save Preferences
+        </button>
+
+    </form>
+
+</div>
+{% endblock %}

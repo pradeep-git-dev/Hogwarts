@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}User Statistics{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-8 max-w-4xl mx-auto">
+
+    <h1 class="text-3xl font-bold mb-6">Your Statistics</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="bg-card p-6 rounded-xl shadow">
+            <h2 class="text-xl font-semibold mb-2">Activity Overview</h2>
+            <p>Total Activities: {{ total_activities }}</p>
+            <p>Login Count: {{ login_count }}</p>
+            <p>Quiz Attempts: {{ quiz_attempts }}</p>
+            <p>Discussion Posts: {{ discussion_posts }}</p>
+        </div>
+
+        <div class="bg-card p-6 rounded-xl shadow">
+            <h2 class="text-xl font-semibold mb-2">Gamification</h2>
+            <p>Points: {{ gamification_stats.points }}</p>
+            <p>Level: {{ gamification_stats.level }}</p>
+            <p>Badges Earned: {{ gamification_stats.badges|length }}</p>
+            <p>Attendance Rate: {{ gamification_stats.attendance_rate }}%</p>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-8 max-w-4xl mx-auto">
+
+    <h1 class="text-3xl font-bold mb-6">My Profile</h1>
+
+    <div class="bg-card p-6 rounded-xl shadow flex gap-6">
+
+        <div>
+            {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" class="w-32 h-32 rounded-full object-cover" />
+            {% else %}
+                <div class="w-32 h-32 bg-muted rounded-full flex items-center justify-center text-xl">
+                    {{ request.user.username|first|upper }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <p class="text-xl font-semibold">{{ request.user.get_full_name }}</p>
+            <p class="text-muted-foreground">{{ profile.get_role_display }}</p>
+
+            <p class="mt-4">
+                <strong>Email:</strong> {{ request.user.email }}
+            </p>
+            <p><strong>Phone:</strong> {{ profile.phone|default:"Not set" }}</p>
+            <p><strong>School:</strong> {{ profile.school_name|default:"Not set" }}</p>
+            <p><strong>Class:</strong> {{ profile.class_name|default:"Not set" }}</p>
+
+            <a href="/accounts/profile/edit/"
+               class="inline-block mt-4 px-4 py-2 bg-primary text-white rounded-lg">
+               Edit Profile
+            </a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

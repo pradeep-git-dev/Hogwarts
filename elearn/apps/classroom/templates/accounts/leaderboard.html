@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Leaderboard{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-8 max-w-4xl mx-auto">
+
+    <h1 class="text-3xl font-bold mb-6 text-center">Global Leaderboard</h1>
+
+    <div class="bg-card shadow rounded-xl p-6">
+
+        {% if top_users %}
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b">
+                        <th class="p-3">Rank</th>
+                        <th class="p-3">User</th>
+                        <th class="p-3">Points</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for u in top_users %}
+                        <tr class="border-b hover:bg-muted">
+                            <td class="p-3">{{ forloop.counter }}</td>
+                            <td class="p-3">{{ u.get_full_name|default:u.username }}</td>
+                            <td class="p-3">{{ u.total_points }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if user_rank %}
+                <p class="mt-6 text-center font-semibold">
+                    Your Rank: {{ user_rank }}
+                </p>
+            {% endif %}
+
+        {% else %}
+            <p class="text-center text-muted-foreground">No leaderboard data yet.</p>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}
