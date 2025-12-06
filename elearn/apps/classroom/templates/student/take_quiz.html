@@ -1,52 +1,90 @@
 {% extends 'base.html' %}
 
-{% block title %}Take Quiz: {{ quiz.name|default:"Math Test" }}{% endblock title %}
+{% block title %}Take Quiz: {{ quiz.title|default:"Quiz" }}{% endblock title %}
 
 {% block content %}
 <div class="flex min-h-screen">
     <main class="flex-1 p-8">
         <h1 class="text-4xl font-extrabold text-primary-DEFAULT mb-3">
-            {{ quiz.name|default:"Final Algebra Exam" }}
+            {{ quiz.title|default:"Quiz" }}
         </h1>
         <p class="text-lg text-muted-foreground mb-8">
-            Total Questions: {{ quiz.question_count|default:"15" }} | Max Points: {{ quiz.max_points|default:"100" }}
+            Total Questions: {{ questions|length }}{% if quiz.time_limit %}
+            &nbsp;|&nbsp; Time Limit: {{ quiz.time_limit }} min
+            {% endif %}
         </p>
 
-        <form method="POST" action="{% url 'submit_quiz' quiz.id|default:456 %}" class="space-y-8">
+        <form method="POST" action="{% url 'submit_quiz' quiz.id %}" class="space-y-8">
             {% csrf_token %}
 
-            {% for question in quiz_questions %}
+            {% for question in questions %}
             <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
                 <h3 class="text-xl font-semibold mb-4 text-foreground">
-                    Q{{ forloop.counter }}. {{ question.text|default:"What is the square root of 81?" }} 
-                    <span class="text-sm text-secondary-DEFAULT">({{ question.points|default:"5" }} pts)</span>
+                    Q{{ forloop.counter }}. {{ question.text }}
                 </h3>
 
                 <div class="space-y-3">
-                    {% if question.type == 'MC' %}
-                        {% for choice in question.choices %}
+                    {% if question.question_type == 'mcq' %}
+                        {% if question.option_a %}
                         <label class="flex items-center space-x-3 p-3 rounded-lg border border-input hover:bg-muted-DEFAULT/50 cursor-pointer">
-                            <input type="radio" name="question_{{ question.id|default:question.id }}" value="{{ choice.id }}" class="text-primary-DEFAULT focus:ring-primary-DEFAULT">
-                            <span class="text-base text-foreground">{{ choice.text|default:"Choice A" }}</span>
+                            <input type="radio"
+                                   name="{{ question.id }}"
+                                   value="{{ question.option_a }}"
+                                   class="text-primary-DEFAULT focus:ring-primary-DEFAULT">
+                            <span class="text-base text-foreground">{{ question.option_a }}</span>
                         </label>
-                        {% endfor %}
+                        {% endif %}
+
+                        {% if question.option_b %}
+                        <label class="flex items-center space-x-3 p-3 rounded-lg border border-input hover:bg-muted-DEFAULT/50 cursor-pointer">
+                            <input type="radio"
+                                   name="{{ question.id }}"
+                                   value="{{ question.option_b }}"
+                                   class="text-primary-DEFAULT focus:ring-primary-DEFAULT">
+                            <span class="text-base text-foreground">{{ question.option_b }}</span>
+                        </label>
+                        {% endif %}
+
+                        {% if question.option_c %}
+                        <label class="flex items-center space-x-3 p-3 rounded-lg border border-input hover:bg-muted-DEFAULT/50 cursor-pointer">
+                            <input type="radio"
+                                   name="{{ question.id }}"
+                                   value="{{ question.option_c }}"
+                                   class="text-primary-DEFAULT focus:ring-primary-DEFAULT">
+                            <span class="text-base text-foreground">{{ question.option_c }}</span>
+                        </label>
+                        {% endif %}
+
+                        {% if question.option_d %}
+                        <label class="flex items-center space-x-3 p-3 rounded-lg border border-input hover:bg-muted-DEFAULT/50 cursor-pointer">
+                            <input type="radio"
+                                   name="{{ question.id }}"
+                                   value="{{ question.option_d }}"
+                                   class="text-primary-DEFAULT focus:ring-primary-DEFAULT">
+                            <span class="text-base text-foreground">{{ question.option_d }}</span>
+                        </label>
+                        {% endif %}
                     {% else %}
-                        <textarea name="question_{{ question.id|default:question.id }}" rows="3" 
+                        <textarea name="{{ question.id }}" rows="3"
                                   class="w-full p-3 border border-input rounded-md bg-background focus:ring-2 focus:ring-ring focus:border-ring transition"
                                   placeholder="Type your answer here..."></textarea>
                     {% endif %}
                 </div>
-                
-                <input type="hidden" name="question_id_{{ forloop.counter }}" value="{{ question.id|default:question.id }}">
             </div>
+            {% empty %}
+            <p class="text-center text-muted-foreground">
+                No questions available for this quiz.
+            </p>
             {% endfor %}
-            
+
+            {% if questions %}
             <div class="pt-4">
                 <button type="submit"
                         class="w-full inline-flex items-center justify-center rounded-lg text-base font-semibold transition-colors bg-primary-DEFAULT text-primary-foreground shadow-soft hover:bg-primary/90 h-12 px-6">
                     Submit Quiz
                 </button>
             </div>
+            {% endif %}
         </form>
     </main>
 </div>

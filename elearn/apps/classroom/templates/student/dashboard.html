@@ -21,33 +21,47 @@
             <h1 class="text-4xl font-extrabold text-primary-DEFAULT">
                 Welcome back, {{ user.first_name|default:"Student" }}!
             </h1>
-            <p class="text-lg font-semibold text-secondary-DEFAULT">Current Rank: #{{ user_rank|default:"3" }}</p>
+            <p class="text-lg font-semibold text-secondary-DEFAULT">
+                Current Rank: #{{ user_rank|default:"3" }}
+            </p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
             <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
                 <p class="text-sm text-muted-foreground">Total Points</p>
-                <p class="text-5xl font-extrabold text-secondary-DEFAULT mt-2">{{ user.points|default:"8,750" }}</p>
+                <p class="text-5xl font-extrabold text-secondary-DEFAULT mt-2">
+                    {{ total_points|default:"8750" }}
+                </p>
             </div>
             <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
                 <p class="text-sm text-muted-foreground">Badges Earned</p>
-                <p class="text-5xl font-extrabold text-accent-DEFAULT mt-2">{{ badge_count|default:"5" }}</p>
+                <p class="text-5xl font-extrabold text-accent-DEFAULT mt-2">
+                    {{ badge_count|default:"5" }}
+                </p>
             </div>
             <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
                 <p class="text-sm text-muted-foreground">Quiz Avg. Score</p>
-                <p class="text-5xl font-extrabold text-primary-DEFAULT mt-2">{{ avg_score|default:"91" }}%</p>
+                <p class="text-5xl font-extrabold text-primary-DEFAULT mt-2">
+                    {{ avg_score|default:"91" }}%
+                </p>
             </div>
         </div>
 
+        {% if next_quiz %}
         <div class="bg-card text-card-foreground p-8 rounded-xl shadow-glow border border-primary/20 mb-10 flex items-center justify-between">
             <div>
                 <h2 class="text-2xl font-bold text-primary-DEFAULT mb-2">Quiz Due Soon!</h2>
-                <p class="text-muted-foreground">**{{ next_quiz.name|default:"Introduction to Programming" }}** is due on {{ next_quiz.due_date|default:"Oct 25" }}.</p>
+                <p class="text-muted-foreground">
+                    {{ next_quiz.title|default:"Introduction to Programming" }} is due on
+                    {{ next_quiz.due_date|default:"Oct 25" }}.
+                </p>
             </div>
-            <a href="{% url 'student_take_quiz' next_quiz.id|default:123 %}" class="inline-flex items-center justify-center rounded-lg text-base font-semibold transition-colors bg-secondary-DEFAULT text-secondary-foreground shadow-accent hover:bg-secondary/90 h-12 px-6">
+            <a href="{% url 'student_take_quiz' next_quiz.id %}"
+               class="inline-flex items-center justify-center rounded-lg text-base font-semibold transition-colors bg-secondary-DEFAULT text-secondary-foreground shadow-accent hover:bg-secondary/90 h-12 px-6">
                 Start Quiz Now
             </a>
         </div>
+        {% endif %}
     </main>
 </div>
 {% endblock content %}

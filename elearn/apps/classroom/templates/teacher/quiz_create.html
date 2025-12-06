@@ -1,61 +1,47 @@
 {% extends 'base.html' %}
-
-{% block title %}Create New Quiz{% endblock title %}
+{% block title %}Create Quiz{% endblock %}
 
 {% block content %}
 <div class="flex min-h-screen">
-    <main class="flex-1 p-8">
-        <h1 class="text-4xl font-extrabold text-secondary-DEFAULT mb-8">
-            Create New Quiz
-        </h1>
-        
-        <form method="POST" action="{% url 'teacher_quiz_create' %}" class="max-w-3xl mx-auto space-y-8 p-6 bg-card rounded-xl shadow-card border">
+
+    <main class="flex-1 p-10 max-w-3xl mx-auto">
+
+        <h1 class="text-4xl font-extrabold text-primary-DEFAULT mb-8">Create New Quiz</h1>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
-            
-            <h2 class="text-2xl font-semibold text-foreground border-b border-border pb-3">Quiz Details</h2>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label for="id_name" class="block text-sm font-medium text-foreground mb-1">Quiz Name</label>
-                    <input type="text" name="name" id="id_name" required
-                           class="w-full h-10 px-3 py-2 border border-input rounded-md bg-background focus:ring-2 focus:ring-ring focus:border-ring transition"
-                           placeholder="e.g., Chapter 5 Review Test">
-                </div>
-                <div>
-                    <label for="id_subject" class="block text-sm font-medium text-foreground mb-1">Subject / Topic</label>
-                    <input type="text" name="subject" id="id_subject"
-                           class="w-full h-10 px-3 py-2 border border-input rounded-md bg-background focus:ring-2 focus:ring-ring focus:border-ring transition"
-                           placeholder="e.g., Python Programming">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label for="id_due_date" class="block text-sm font-medium text-foreground mb-1">Due Date</label>
-                    <input type="date" name="due_date" id="id_due_date"
-                           class="w-full h-10 px-3 py-2 border border-input rounded-md bg-background focus:ring-2 focus:ring-ring focus:border-ring transition">
-                </div>
-                <div>
-                    <label for="id_duration" class="block text-sm font-medium text-foreground mb-1">Time Limit (Minutes)</label>
-                    <input type="number" name="duration" id="id_duration" value="60"
-                           class="w-full h-10 px-3 py-2 border border-input rounded-md bg-background focus:ring-2 focus:ring-ring focus:border-ring transition">
-                </div>
+            <div>
+                <label class="font-semibold">Quiz Title</label>
+                <input type="text" name="title"
+                       class="w-full p-3 border rounded-lg bg-background" required>
             </div>
 
             <div>
-                <label for="id_description" class="block text-sm font-medium text-foreground mb-1">Description</label>
-                <textarea name="description" id="id_description" rows="3"
-                          class="w-full p-3 border border-input rounded-md bg-background focus:ring-2 focus:ring-ring focus:border-ring transition"
-                          placeholder="Provide instructions or context for the students."></textarea>
+                <label class="font-semibold">Time Limit (minutes)</label>
+                <input type="number" name="time_limit"
+                       class="w-full p-3 border rounded-lg bg-background" required>
             </div>
 
-            <div class="border-t border-border pt-6 flex justify-end">
-                <a href="{% url 'teacher_quiz_questions_edit' quiz_id|default:0 %}" 
-                   class="inline-flex items-center justify-center rounded-lg text-base font-semibold transition-colors bg-primary-DEFAULT text-primary-foreground shadow hover:bg-primary/90 h-11 px-6">
-                    Save Details & Add Questions &rarr;
-                </a>
+            <div>
+                <label class="font-semibold">Quiz Password</label>
+                <input type="text" name="password"
+                       class="w-full p-3 border rounded-lg bg-background" required>
             </div>
+
+            <div>
+                <label class="font-semibold">Upload Questions PDF (optional)</label>
+                <input type="file" name="pdf_file"
+                       class="w-full p-3 border rounded-lg bg-background">
+            </div>
+
+            <button class="bg-primary-DEFAULT text-primary-foreground px-6 py-3 rounded-lg font-semibold">
+                Create Quiz
+            </button>
+
         </form>
+
     </main>
+
 </div>
-{% endblock content %}
+{% endblock %}
