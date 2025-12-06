@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard{% endblock title %}
+
+{% block content %}
+<div class="flex">
+    <main class="flex-1 p-8">
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-4xl font-extrabold text-primary-DEFAULT">
+                Welcome, {{ user.first_name|default:"Student" }}!
+            </h1>
+            <p class="text-lg font-semibold text-secondary-DEFAULT">Current Rank: #{{ user_rank|default:"3" }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Total Points</p>
+                <p class="text-5xl font-extrabold text-secondary-DEFAULT mt-2">{{ user.points|default:"8,750" }}</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Badges Earned</p>
+                <p class="text-5xl font-extrabold text-accent-DEFAULT mt-2">{{ badge_count|default:"5" }}</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card text-center">
+                <p class="text-sm text-muted-foreground">Upcoming Quiz</p>
+                <p class="text-xl font-bold text-primary-DEFAULT mt-2">{{ next_quiz.name|default:"World History Exam" }}</p>
+                <p class="text-sm text-muted-foreground">{{ next_quiz.date|default:"Tomorrow at 10:00 AM" }}</p>
+            </div>
+        </div>
+
+        <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card mb-10">
+            <h2 class="text-2xl font-semibold mb-4 text-foreground">Top 5 Leaderboard</h2>
+            <ul class="space-y-3">
+                {% for player in top_players %}
+                <li class="flex justify-between items-center p-3 border-b border-border/50">
+                    <span class="font-medium {% if player.is_current_user %}text-primary-DEFAULT font-bold{% endif %}">
+                        #{{ forloop.counter }} {{ player.username|default:"Alice" }}
+                    </span>
+                    <span class="text-sm text-secondary-DEFAULT font-bold">{{ player.points|default:"9,100" }} pts</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
+            <h2 class="text-2xl font-semibold mb-4 text-foreground">Recent Feedback</h2>
+            <p class="text-muted-foreground">
+                **"Excellent work on your last assignment! Keep up the focus."** - Mr. Smith
+            </p>
+        </div>
+    </main>
+</div>
+{% endblock content %}

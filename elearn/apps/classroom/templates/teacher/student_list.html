@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Student List{% endblock title %}
+
+{% block content %}
+<div class="flex">
+    <main class="flex-1 p-8">
+        <h1 class="text-4xl font-extrabold text-primary-DEFAULT mb-8">
+            All Students ({{ student_count|default:"150" }})
+        </h1>
+
+        <div class="bg-card text-card-foreground rounded-xl shadow-card overflow-hidden">
+            <table class="min-w-full divide-y divide-border">
+                <thead class="bg-muted-DEFAULT">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Points</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border">
+                    {% for student in students %}
+                    <tr class="hover:bg-muted-DEFAULT/50 transition duration-150 ease-in-out">
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">{{ student.name|default:"Alex Johnson" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{{ student.email|default:"alex@mail.com" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-semibold text-secondary-DEFAULT">{{ student.points|default:"3,450" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{% url 'teacher_student_detail' student.id|default:1 %}" class="text-primary-DEFAULT hover:underline">View Profile</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-8 text-muted-foreground">No students found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+{% endblock content %}

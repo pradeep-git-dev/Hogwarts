@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard{% endblock title %}
+
+{% block content %}
+<div class="flex">
+    <aside class="w-64 min-h-screen bg-sidebar-DEFAULT text-sidebar-foreground p-4 border-r border-sidebar-border">
+        <h3 class="text-2xl font-bold text-sidebar-primary-foreground mb-8">Pearlsquare</h3>
+        <nav class="space-y-2">
+            <a href="{% url 'teacher_dashboard' %}" class="flex items-center p-3 rounded-lg bg-sidebar-accent text-sidebar-accent-foreground font-semibold">Dashboard</a>
+            <a href="{% url 'teacher_student_list' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Students</a>
+            <a href="{% url 'teacher_quiz_list' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Quizzes</a>
+            <a href="{% url 'leaderboard' %}" class="flex items-center p-3 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">Leaderboard</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-4xl font-extrabold text-primary-DEFAULT">
+                Hello, {{ user.username|default:"Teacher" }}!
+            </h1>
+            <a href="{% url 'teacher_quiz_create' %}" class="inline-flex items-center justify-center rounded-lg text-sm font-medium bg-secondary-DEFAULT text-secondary-foreground shadow hover:bg-secondary/90 h-10 px-4">
+                + Create New Quiz
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
+                <p class="text-sm text-muted-foreground">Total Students</p>
+                <p class="text-3xl font-extrabold text-primary-DEFAULT mt-1">{{ total_students|default:"150" }}</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
+                <p class="text-sm text-muted-foreground">Active Quizzes</p>
+                <p class="text-3xl font-extrabold text-secondary-DEFAULT mt-1">{{ active_quizzes|default:"12" }}</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
+                <p class="text-sm text-muted-foreground">Avg. Quiz Score</p>
+                <p class="text-3xl font-extrabold text-accent-DEFAULT mt-1">{{ avg_score|default:"88.5" }}%</p>
+            </div>
+            <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
+                <p class="text-sm text-muted-foreground">Total Points Awarded</p>
+                <p class="text-3xl font-extrabold text-muted-foreground mt-1">{{ total_points|default:"25,000" }}</p>
+            </div>
+        </div>
+
+        <div class="bg-card text-card-foreground p-6 rounded-lg border shadow-card">
+            <h2 class="text-2xl font-semibold mb-4 text-foreground">Latest Quiz Results</h2>
+            <ul class="space-y-3">
+                <li class="flex justify-between items-center p-3 border-b border-border/50">
+                    <span class="font-medium">Calculus Midterm Quiz</span>
+                    <span class="text-sm text-accent-DEFAULT font-bold">75% Average</span>
+                </li>
+                <li class="flex justify-between items-center p-3 border-b border-border/50">
+                    <span class="font-medium">Python Basics</span>
+                    <span class="text-sm text-primary-DEFAULT font-bold">92% Average</span>
+                </li>
+            </ul>
+        </div>
+    </main>
+</div>
+{% endblock content %}
