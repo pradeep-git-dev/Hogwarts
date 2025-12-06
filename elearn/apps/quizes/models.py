@@ -12,6 +12,16 @@ class Quiz(models.Model):
     teacher = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True) 
+    # Time limit in minutes
+    time_limit = models.IntegerField(default=10)
+
+    # Teacher uploads questions PDF (optional)
+    questions_pdf = models.FileField(upload_to='quiz_pdfs/', blank=True, null=True)
+
+    # Password protected exam
+    password = models.CharField(max_length=20)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -20,20 +30,27 @@ class Quiz(models.Model):
 
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    question_type = models.CharField(max_length=10, choices=QUESTION_TYPES)
-    text = models.CharField(max_length=500)
 
-    # For MCQs
-    option_a = models.CharField(max_length=300, blank=True, null=True)
-    option_b = models.CharField(max_length=300, blank=True, null=True)
-    option_c = models.CharField(max_length=300, blank=True, null=True)
-    option_d = models.CharField(max_length=300, blank=True, null=True)
+    text = models.CharField(max_length=300)
 
-    # For Fill-in-the-blanks correct answer
-    correct_answer = models.CharField(max_length=300)
+    # Optional MCQ fields
+    option_a = models.CharField(max_length=200, blank=True, null=True)
+    option_b = models.CharField(max_length=200, blank=True, null=True)
+    option_c = models.CharField(max_length=200, blank=True, null=True)
+    option_d = models.CharField(max_length=200, blank=True, null=True)
+
+    # For MCQ or fill-in-the-blank
+    correct_answer = models.CharField(max_length=200)
+
+    QUESTION_TYPES = (
+        ('mcq', 'Multiple Choice'),
+        ('text', 'Written Answer'),
+    )
+    question_type = models.CharField(max_length=10, choices=QUESTION_TYPES, default='mcq')
 
     def __str__(self):
         return self.text
+
 
 
 class StudentAnswer(models.Model):
@@ -52,24 +69,6 @@ class QuizResult(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
 from django.db import models
 from django.contrib.auth.models import User
-
-class Quiz(models.Model):
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-
-    # Time limit in minutes
-    time_limit = models.IntegerField(default=10)
-
-    # Teacher uploads questions PDF (optional)
-    questions_pdf = models.FileField(upload_to='quiz_pdfs/', blank=True, null=True)
-
-    # Password protected exam
-    password = models.CharField(max_length=20)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
 
 
 class Question(models.Model):
