@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ classroom.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10">
+
+    <h2 class="text-3xl font-bold mb-4">{{ classroom.name }}</h2>
+    <p class="text-gray-700 mb-4">{{ classroom.description }}</p>
+
+    <div class="flex gap-4 mb-6">
+        <a href="{% url 'edit_classroom' classroom.id %}" 
+           class="bg-blue-600 text-white px-4 py-2 rounded">
+            Edit
+        </a>
+        <a href="{% url 'classroom_members' classroom.id %}" 
+           class="bg-gray-800 text-white px-4 py-2 rounded">
+            Members
+        </a>
+        <a href="{% url 'mark_attendance' classroom.id %}" 
+           class="bg-green-600 text-white px-4 py-2 rounded">
+            Attendance
+        </a>
+    </div>
+
+    <hr class="my-6">
+
+    <h3 class="text-2xl font-semibold mb-3">Announcements</h3>
+
+    {% if announcements %}
+        {% for a in announcements %}
+            <div class="p-4 bg-white shadow mb-3 rounded border">
+                <h4 class="font-bold">{{ a.title }}</h4>
+                <p>{{ a.content }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No announcements yet.</p>
+    {% endif %}
+
+</div>
+{% endblock %}

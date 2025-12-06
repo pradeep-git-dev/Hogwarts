@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Create Announcement{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-10">
+
+    <h2 class="text-3xl font-bold mb-6">Create Announcement</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label class="block font-semibold mb-2">Title</label>
+        <input type="text" name="title" required
+               class="w-full p-3 border rounded-lg mb-4">
+
+        <label class="block font-semibold mb-2">Message</label>
+        <textarea name="message" rows="5" required
+                  class="w-full p-3 border rounded-lg mb-6"></textarea>
+
+        <button type="submit"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg">
+            Post Announcement
+        </button>
+    </form>
+
+</div>
+{% endblock %}

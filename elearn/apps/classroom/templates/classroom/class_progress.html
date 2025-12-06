@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Class Progress{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-10">
+
+    <h2 class="text-3xl font-bold mb-6">Class Progress – {{ classroom.name }}</h2>
+
+    <table class="w-full border-collapse shadow-lg">
+        <thead>
+            <tr class="bg-gray-800 text-white text-left">
+                <th class="p-3">Student</th>
+                <th class="p-3">Attendance</th>
+                <th class="p-3">Quiz Avg</th>
+                <th class="p-3">Assignments</th>
+                <th class="p-3">Overall %</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for p in progress %}
+            <tr class="border-b hover:bg-gray-100">
+                <td class="p-3 font-semibold">{{ p.student.username }}</td>
+                <td class="p-3">{{ p.attendance }}%</td>
+                <td class="p-3">{{ p.quiz_score }}%</td>
+                <td class="p-3">{{ p.tasks_completed }}/{{ p.tasks_total }}</td>
+                <td class="p-3 font-bold">{{ p.overall }}%</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="p-4 text-center text-gray-600">
+                    No students found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

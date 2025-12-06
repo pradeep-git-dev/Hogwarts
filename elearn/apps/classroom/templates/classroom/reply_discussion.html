@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Reply Discussion{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10">
+
+    <h2 class="text-2xl font-bold mb-4">Reply to: {{ discussion.title }}</h2>
+
+    <div class="p-4 border bg-gray-50 rounded-lg mb-6">
+        {{ discussion.content }}
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label class="block font-semibold mb-2">Your Reply</label>
+        <textarea name="content" rows="5" required
+                  class="w-full p-3 border rounded-lg mb-4"></textarea>
+
+        <button type="submit"
+                class="bg-blue-600 text-white px-5 py-2 rounded-lg">
+            Submit Reply
+        </button>
+    </form>
+
+</div>
+{% endblock %}

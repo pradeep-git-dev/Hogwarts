@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Student Progress{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10">
+
+    <h2 class="text-3xl font-bold mb-6">
+        Progress Report – {{ student.username }}
+    </h2>
+
+    <!-- General Info -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h3 class="text-xl font-semibold mb-2">Student Details</h3>
+        <p><strong>Full Name:</strong> {{ student.get_full_name }}</p>
+        <p><strong>Email:</strong> {{ student.email }}</p>
+        <p><strong>Role:</strong> {{ student.profile.role|title }}</p>
+    </div>
+
+    <!-- Attendance -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4">Attendance</h3>
+        <p class="text-lg">
+            Attended: <strong>{{ attendance.attended }}</strong> /
+            <strong>{{ attendance.total }}</strong> classes
+        </p>
+
+        <p class="mt-2 text-lg font-bold">
+            Attendance Rate:
+            <span class="text-blue-600">{{ attendance.percentage }}%</span>
+        </p>
+    </div>
+
+    <!-- Quiz Scores -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4">Quiz Performance</h3>
+
+        {% if quizzes %}
+        <table class="w-full border-collapse shadow">
+            <thead>
+                <tr class="bg-gray-200 font-semibold">
+                    <th class="p-3">Quiz</th>
+                    <th class="p-3">Score</th>
+                    <th class="p-3">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in quizzes %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3">{{ q.quiz.title }}</td>
+                    <td class="p-3">{{ q.score }}%</td>
+                    <td class="p-3">{{ q.date|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-gray-600">No quiz attempts yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Assignment Completion -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4">Assignments</h3>
+
+        {% if assignments %}
+        <ul class="list-disc pl-6">
+            {% for a in assignments %}
+            <li class="mb-2">
+                <strong>{{ a.title }}</strong> – 
+                {% if a.completed %}
+                    <span class="text-green-600 font-semibold">Completed</span>
+                {% else %}
+                    <span class="text-red-600 font-semibold">Pending</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-gray-600">No assignments found.</p>
+        {% endif %}
+    </div>
+
+    <!-- Overall Performance -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-10">
+        <h3 class="text-xl font-semibold mb-3">Overall Performance</h3>
+
+        <p class="text-lg">
+            <strong>Overall Score:</strong>
+            <span class="text-purple-600 font-bold">{{ overall_score }}%</span>
+        </p>
+    </div>
+
+</div>
+{% endblock %}

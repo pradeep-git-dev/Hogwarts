@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Members - {{ classroom.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-10">
+
+    <h2 class="text-3xl font-bold mb-6">Members in {{ classroom.name }}</h2>
+
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="p-3 border">Student</th>
+                <th class="p-3 border">Joined At</th>
+                <th class="p-3 border">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in members %}
+            <tr class="border">
+                <td class="p-3">{{ m.student.username }}</td>
+                <td class="p-3 text-gray-600">{{ m.created_at|date:"Y-m-d" }}</td>
+                <td class="p-3">
+                    <a href="{% url 'remove_member' classroom.id m.id %}" 
+                       class="bg-red-600 text-white px-3 py-1 rounded"
+                       onclick="return confirm('Remove this student?');">
+                        Remove
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center p-4 text-gray-600">
+                    No students enrolled yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

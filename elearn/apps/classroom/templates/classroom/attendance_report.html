@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Attendance Report{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10">
+
+    <h2 class="text-3xl font-bold mb-4">Attendance Report - {{ classroom.name }}</h2>
+
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="p-3 border">Student</th>
+                <th class="p-3 border">Present Days</th>
+                <th class="p-3 border">Total Days</th>
+                <th class="p-3 border">Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in report %}
+            <tr class="border">
+                <td class="p-3">{{ r.student.username }}</td>
+                <td class="p-3">{{ r.present }}</td>
+                <td class="p-3">{{ r.total }}</td>
+                <td class="p-3 font-semibold">{{ r.percent }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}
