@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Student Responses{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <h2 class="text-2xl font-bold mb-4">Responses for {{ quiz.title }}</h2>
+
+    <table class="w-full bg-white shadow rounded">
+        <tr class="border-b">
+            <th class="p-2">Student</th>
+            <th class="p-2">Score</th>
+        </tr>
+
+        {% for s in scores %}
+        <tr class="border-b">
+            <td class="p-2">{{ s.student.username }}</td>
+            <td class="p-2">{{ s.score }}</td>
+        </tr>
+        {% empty %}
+            <tr><td colspan="2" class="p-2 text-gray-500">No submissions yet.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

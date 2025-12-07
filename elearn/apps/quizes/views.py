@@ -1,44 +1,43 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
-
 from .models import Quiz, Question, StudentResponse, QuizScore
 
 
-# QUIZ LIST FOR ALL USERS
+# ============================================================
+# QUIZ LIST (COMMON)
+# ============================================================
 @login_required
 def quiz_list(request):
     quizzes = Quiz.objects.all().order_by('-created_at')
     return render(request, "quiz_list.html", {"quizzes": quizzes})
 
 
+# ============================================================
 # TEACHER — CREATE QUIZ
+# ============================================================
 @login_required
 def create_quiz(request):
-    if not request.user.is_staff:
+    # IMPORTANT FIX: Use your role, NOT is_staff
+    if request.user.profile.role != "teacher":
         return HttpResponse("Only teachers can create quizzes.")
 
     if request.method == "POST":
-        title = request.POST["title"]
-        time_limit = request.POST["time_limit"]
-        password = request.POST["password"]
-        pdf_file = request.FILES.get("pdf_file", None)
-
         quiz = Quiz.objects.create(
             teacher=request.user,
-            title=title,
-            time_limit=time_limit,
-            password=password,
-            questions_pdf=pdf_file,
+            title=request.POST["title"],
+            time_limit=request.POST["time_limit"],
+            password=request.POST["password"],
+            questions_pdf=request.FILES.get("pdf_file")
         )
-
         return redirect("add_question", quiz_id=quiz.id)
 
     return render(request, "create_quiz.html")
 
 
+# ============================================================
 # TEACHER — ADD QUESTIONS
+# ============================================================
 @login_required
 def add_question(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -47,18 +46,13 @@ def add_question(request, quiz_id):
         return HttpResponse("You are not allowed to modify this quiz.")
 
     if request.method == "POST":
-        question_text = request.POST["text"]
-        qtype = request.POST["question_type"]
-        correct = request.POST["correct"]
-
         q = Question.objects.create(
             quiz=quiz,
-            text=question_text,
-            question_type=qtype,
-            correct_answer=correct,
+            text=request.POST["text"],
+            question_type=request.POST["question_type"],
+            correct_answer=request.POST["correct"]
         )
 
-        # Optional MCQ options
         q.option_a = request.POST.get("option_a")
         q.option_b = request.POST.get("option_b")
         q.option_c = request.POST.get("option_c")
@@ -73,14 +67,15 @@ def add_question(request, quiz_id):
     return render(request, "add_question.html", {"quiz": quiz})
 
 
-# ENTER PASSWORD BEFORE STARTING QUIZ
+# ============================================================
+# PASSWORD PROTECTION
+# ============================================================
 @login_required
 def quiz_password(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
 
     if request.method == "POST":
-        entered = request.POST["password"]
-        if entered == quiz.password:
+        if request.POST["password"] == quiz.password:
             return redirect("start_quiz", quiz_id=quiz.id)
 
         return render(request, "quiz_password.html", {
@@ -91,54 +86,61 @@ def quiz_password(request, quiz_id):
     return render(request, "quiz_password.html", {"quiz": quiz})
 
 
-# START QUIZ (DISPLAY QUESTIONS)
+# ============================================================
+# START QUIZ
+# ============================================================
 @login_required
 def start_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    questions = Question.objects.filter(quiz=quiz)
+    questions = quiz.questions.all()
 
     return render(request, "start_quiz.html", {
         "quiz": quiz,
-        "questions": questions,
+        "questions": questions
     })
 
 
+# ============================================================
 # SUBMIT QUIZ
+# ============================================================
 @login_required
 def submit_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    questions = Question.objects.filter(quiz=quiz)
+    questions = quiz.questions.all()
 
     score = 0
 
     for q in questions:
         ans = request.POST.get(str(q.id), "")
 
-        # MCQ auto-checking
-        is_correct = False
-        if q.question_type == "mcq":
-            if ans.strip().lower() == q.correct_answer.strip().lower():
-                is_correct = True
-                score += 1
+        is_correct = (
+            q.question_type == "mcq" 
+            and ans.strip().lower() == q.correct_answer.strip().lower()
+        )
+
+        if is_correct:
+            score += 1
 
         StudentResponse.objects.create(
             student=request.user,
             quiz=quiz,
             question=q,
             student_answer=ans,
-            is_correct=is_correct,
+            is_correct=is_correct
         )
 
     QuizScore.objects.create(
         student=request.user,
         quiz=quiz,
-        score=score,
+        score=score
     )
 
     return redirect("quiz_result", quiz_id=quiz.id)
 
 
-# STUDENT — QUIZ RESULTS
+# ============================================================
+# STUDENT — SEE OWN RESULT
+# ============================================================
 @login_required
 def quiz_result(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -152,7 +154,9 @@ def quiz_result(request, quiz_id):
     })
 
 
-# TEACHER — VIEW ALL STUDENT SCORES
+# ============================================================
+# TEACHER — VIEW ALL RESPONSES
+# ============================================================
 @login_required
 def teacher_view_responses(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
@@ -164,5 +168,31 @@ def teacher_view_responses(request, quiz_id):
 
     return render(request, "teacher_responses.html", {
         "quiz": quiz,
-        "scores": all_scores,
+        "scores": all_scores
     })
+
+
+# ============================================================
+# STUDENT — QUIZ LIST
+# ============================================================
+@login_required
+def student_quiz_list(request):
+    quizzes = Quiz.objects.all().order_by('-created_at')
+    return render(request, "student/student_quiz_list.html", {"quizzes": quizzes})
+
+
+# ============================================================
+# STUDENT — TAKE QUIZ
+# ============================================================
+@login_required
+def student_take_quiz(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    return redirect("quiz_password", quiz_id=quiz.id)
+
+
+# ============================================================
+# STUDENT — RESULT PAGE
+# ============================================================
+@login_required
+def student_quiz_result(request, quiz_id):
+    return quiz_result(request, quiz_id)

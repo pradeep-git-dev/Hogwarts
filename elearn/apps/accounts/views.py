@@ -10,7 +10,7 @@ from .models import UserProfile, GamificationStats, NotificationPreference, User
 
 
 # =========================================================
-#  AUTHENTICATION
+# AUTH
 # =========================================================
 
 def register(request):
@@ -21,7 +21,6 @@ def register(request):
         confirm = request.POST.get('confirm_password')
         role = request.POST.get('role', 'student')
 
-        # validations
         if password != confirm:
             messages.error(request, "Passwords do not match.")
             return redirect('register')
@@ -34,7 +33,6 @@ def register(request):
             messages.error(request, "Email already used.")
             return redirect('register')
 
-        # create user
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -43,12 +41,11 @@ def register(request):
             last_name=request.POST.get('last_name', '')
         )
 
-        # Set role on created profile (signal already created the profile)
+        # Update profile role
         profile = user.profile
         profile.role = role
         profile.save()
 
-        # create default stats + notification prefs
         GamificationStats.objects.create(user=user)
         NotificationPreference.objects.create(user=user)
 
@@ -90,36 +87,55 @@ def logout_view(request):
 
 
 # =========================================================
-#  DASHBOARD + PROFILE
+# DASHBOARD
 # =========================================================
 
 @login_required
 def dashboard(request):
-    """ROLE-BASED DASHBOARD RENDERING"""
     user = request.user
     profile = user.profile
     stats = user.gamification_stats
     activities = user.activities.all()[:10]
 
-    # teacher sees teacher dashboard
+    # ------------------
+    # TEACHER DASHBOARD
+    # ------------------
     if profile.role == "teacher":
         classrooms = user.classrooms_taught.all()
+
+        total_students = sum(c.members.count() for c in classrooms)
+
+        from apps.quizes.models import Quiz
+        quizzes = Quiz.objects.filter(teacher=user)
+
+        from apps.classroom.models import AnnouncementBoard
+        announcements = sum(c.announcements.count() for c in classrooms)
+
         return render(request, "teacher/dashboard.html", {
             "profile": profile,
             "stats": stats,
             "activities": activities,
-            "classrooms": classrooms
+            "classrooms": classrooms,
+            "total_students": total_students,
+            "quizzes": quizzes,
+            "announcements": announcements,
         })
 
-    # students see their dashboard
+    # ------------------
+    # STUDENT DASHBOARD
+    # ------------------
     classrooms = user.enrolled_classrooms.all()
     return render(request, "student/dashboard.html", {
         "profile": profile,
         "stats": stats,
         "activities": activities,
-        "classrooms": classrooms
+        "classrooms": classrooms,
     })
 
+
+# =========================================================
+# PROFILE
+# =========================================================
 
 @login_required
 def profile_view(request):
@@ -135,13 +151,11 @@ def edit_profile(request):
     profile = user.profile
 
     if request.method == "POST":
-        # update user fields
         user.first_name = request.POST.get("first_name", user.first_name)
         user.last_name = request.POST.get("last_name", user.last_name)
         user.email = request.POST.get("email", user.email)
         user.save()
 
-        # profile fields
         profile.bio = request.POST.get("bio", profile.bio)
         profile.phone = request.POST.get("phone", profile.phone)
         profile.school_name = request.POST.get("school_name", profile.school_name)
@@ -159,7 +173,28 @@ def edit_profile(request):
 
 
 # =========================================================
-#  LEADERBOARD
+# STUDENT PAGES
+# =========================================================
+
+@login_required
+def student_dashboard(request):
+    return redirect("dashboard")
+
+
+@login_required
+def student_attendance(request):
+    return render(request, "student/attendance.html")
+
+
+@login_required
+def student_feedback(request):
+    return render(request, "student/feedback.html", {
+        "recent_feedback": []
+    })
+
+
+# =========================================================
+# LEADERBOARD + BADGES + STATS
 # =========================================================
 
 def leaderboard(request):
@@ -178,13 +213,9 @@ def leaderboard(request):
 
     return render(request, "accounts/leaderboard.html", {
         "top_users": top_users,
-        "user_rank": rank
+        "user_rank": rank,
     })
 
-
-# =========================================================
-#  BADGES + STATISTICS
-# =========================================================
 
 @login_required
 def badges_view(request):
@@ -212,7 +243,7 @@ def user_stats(request):
 
 
 # =========================================================
-#  NOTIFICATION SETTINGS
+# NOTIFICATION SETTINGS
 # =========================================================
 
 @login_required
@@ -234,7 +265,7 @@ def notification_preferences(request):
 
 
 # =========================================================
-#  SEARCH + API
+# SEARCH + API
 # =========================================================
 
 def search_users(request):
@@ -250,7 +281,6 @@ def search_users(request):
         if len(query) >= 2 else []
     )
 
-    # AJAX request response
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         data = [{
             "id": u.id,

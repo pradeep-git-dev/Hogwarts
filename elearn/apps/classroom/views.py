@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Q, Count, Avg
-
 import random
 import string
 
@@ -14,31 +13,52 @@ from .models import (
 )
 
 # ---------------------------------------------------------
+# UTILS
+# ---------------------------------------------------------
+
+def generate_code(length=6):
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
+
+def user_is_teacher(user):
+    return hasattr(user, "profile") and user.profile.role == "teacher"
+
+
+# ---------------------------------------------------------
 # CLASSROOM CRUD
 # ---------------------------------------------------------
 
 @login_required
 def create_classroom(request):
+    if not user_is_teacher(request.user):
+        messages.error(request, "Only teachers can create classrooms.")
+        return redirect("classroom_list")
+
     if request.method == "POST":
-        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        name = request.POST.get("name")
+        subject = request.POST.get("subject")
+
+        if not name or not subject:
+            messages.error(request, "Classroom name and subject are required.")
+            return redirect("create_classroom")
 
         classroom = Classroom.objects.create(
             teacher=request.user,
-            name=request.POST['name'],
+            name=name,
             description=request.POST.get('description'),
-            subject=request.POST.get('subject'),
+            subject=subject,
             grade_level=request.POST.get('grade_level'),
             room_number=request.POST.get('room_number'),
             schedule=request.POST.get('schedule'),
             max_students=int(request.POST.get('max_students', 50)),
-            code=code,
+            code=generate_code(),
         )
 
         if 'banner_image' in request.FILES:
             classroom.banner_image = request.FILES['banner_image']
             classroom.save()
 
-        messages.success(request, f"Classroom created successfully! Code: {code}")
+        messages.success(request, f"Classroom created! Code: {classroom.code}")
         return redirect("classroom_detail", classroom_id=classroom.id)
 
     return render(request, "classroom/create_classroom.html")
@@ -46,13 +66,10 @@ def create_classroom(request):
 
 @login_required
 def classroom_list(request):
-    user = request.user
-
-    # Teacher vs student logic
-    if hasattr(user, "profile") and user.profile.role == "teacher":
-        classrooms = user.classrooms_taught.filter(status="active")
+    if user_is_teacher(request.user):
+        classrooms = request.user.classrooms_taught.filter(status="active")
     else:
-        classrooms = user.enrolled_classrooms.filter(status="active")
+        classrooms = request.user.enrolled_classrooms.filter(status="active")
 
     return render(request, "classroom/classroom_list.html", {"classrooms": classrooms})
 
@@ -90,8 +107,11 @@ def edit_classroom(request, classroom_id):
         return redirect("classroom_detail", classroom_id=classroom_id)
 
     if request.method == "POST":
-        for f in ["name", "description", "subject", "grade_level", "room_number", "schedule"]:
-            setattr(classroom, f, request.POST.get(f, getattr(classroom, f)))
+        fields = ["name", "description", "subject", "grade_level", "room_number", "schedule"]
+        for f in fields:
+            new_value = request.POST.get(f)
+            if new_value:
+                setattr(classroom, f, new_value)
 
         classroom.max_students = int(request.POST.get("max_students", classroom.max_students))
 
@@ -99,7 +119,7 @@ def edit_classroom(request, classroom_id):
             classroom.banner_image = request.FILES["banner_image"]
 
         classroom.save()
-        messages.success(request, "Classroom updated.")
+        messages.success(request, "Classroom updated successfully.")
         return redirect("classroom_detail", classroom_id=classroom_id)
 
     return render(request, "classroom/edit_classroom.html", {"classroom": classroom})
@@ -110,13 +130,12 @@ def delete_classroom(request, classroom_id):
     classroom = get_object_or_404(Classroom, id=classroom_id)
 
     if classroom.teacher != request.user:
-        messages.error(request, "Only the teacher can delete the classroom.")
+        messages.error(request, "Only the teacher can delete this classroom.")
         return redirect("classroom_detail", classroom_id=classroom_id)
 
     if request.method == "POST":
-        name = classroom.name
         classroom.delete()
-        messages.success(request, f"Classroom '{name}' deleted.")
+        messages.success(request, "Classroom deleted.")
         return redirect("classroom_list")
 
     return render(request, "classroom/delete_classroom.html", {"classroom": classroom})
@@ -129,7 +148,7 @@ def delete_classroom(request, classroom_id):
 @login_required
 def join_classroom(request):
     if request.method == "POST":
-        code = request.POST.get("code", "").upper()
+        code = request.POST.get("code", "").upper().strip()
 
         try:
             classroom = Classroom.objects.get(code=code)
@@ -147,9 +166,12 @@ def join_classroom(request):
             defaults={"role": "student"}
         )
 
-        ProgressTracking.objects.get_or_create(student=request.user, classroom=classroom)
+        ProgressTracking.objects.get_or_create(
+            student=request.user,
+            classroom=classroom
+        )
 
-        messages.success(request, f"Joined classroom {classroom.name}")
+        messages.success(request, f"Joined classroom '{classroom.name}'")
         return redirect("classroom_detail", classroom_id=classroom.id)
 
     return render(request, "classroom/join_classroom.html")
@@ -160,11 +182,14 @@ def classroom_members(request, classroom_id):
     classroom = get_object_or_404(Classroom, id=classroom_id)
 
     if classroom.teacher != request.user and not ClassMember.objects.filter(student=request.user, classroom=classroom).exists():
-        messages.error(request, "You are not allowed to view members.")
+        messages.error(request, "Not allowed to view members.")
         return redirect("classroom_list")
 
     members = classroom.members.filter(status="active")
-    return render(request, "classroom/classroom_members.html", {"classroom": classroom, "members": members})
+    return render(request, "classroom/classroom_members.html", {
+        "classroom": classroom,
+        "members": members
+    })
 
 
 @login_required
@@ -176,11 +201,10 @@ def remove_member(request, classroom_id, member_id):
         return redirect("classroom_members", classroom_id=classroom_id)
 
     member = get_object_or_404(ClassMember, id=member_id, classroom=classroom)
-
     member.status = "dropped"
     member.save()
 
-    messages.success(request, f"Removed {member.student.username} from the classroom.")
+    messages.success(request, f"Removed {member.student.username}.")
     return redirect("classroom_members", classroom_id=classroom_id)
 
 
@@ -193,7 +217,7 @@ def mark_attendance(request, classroom_id):
     classroom = get_object_or_404(Classroom, id=classroom_id)
 
     if classroom.teacher != request.user:
-        messages.error(request, "Only the teacher can mark attendance.")
+        messages.error(request, "Only teachers can mark attendance.")
         return redirect("classroom_detail", classroom_id=classroom_id)
 
     if request.method == "POST":
@@ -204,7 +228,7 @@ def mark_attendance(request, classroom_id):
                 student_id = key.split("_")[1]
                 student = User.objects.get(id=student_id)
 
-                attendance, created = Attendance.objects.get_or_create(
+                att, created = Attendance.objects.get_or_create(
                     classroom=classroom,
                     student=student,
                     date=date,
@@ -212,19 +236,17 @@ def mark_attendance(request, classroom_id):
                 )
 
                 if not created:
-                    attendance.status = value
-                    attendance.save()
+                    att.status = value
+                    att.recorded_by = request.user
+                    att.save()
 
         messages.success(request, "Attendance updated.")
         return redirect("classroom_detail", classroom_id=classroom_id)
 
-    members = classroom.members.filter(status="active")
-    today = timezone.now().date()
-
     return render(request, "classroom/mark_attendance.html", {
         "classroom": classroom,
-        "members": members,
-        "today": today,
+        "members": classroom.members.filter(status="active"),
+        "today": timezone.now().date()
     })
 
 
@@ -278,12 +300,10 @@ def discussion_detail(request, classroom_id, discussion_id):
     discussion.views_count += 1
     discussion.save()
 
-    replies = discussion.replies.all()
-
     return render(request, "classroom/discussion_detail.html", {
         "classroom_id": classroom_id,
         "discussion": discussion,
-        "replies": replies,
+        "replies": discussion.replies.all()
     })
 
 
@@ -313,7 +333,7 @@ def create_announcement(request, classroom_id):
     classroom = get_object_or_404(Classroom, id=classroom_id)
 
     if classroom.teacher != request.user:
-        messages.error(request, "Only teachers can post announcements.")
+        messages.error(request, "Only teachers can make announcements.")
         return redirect("classroom_detail", classroom_id=classroom_id)
 
     if request.method == "POST":
@@ -322,7 +342,7 @@ def create_announcement(request, classroom_id):
             teacher=request.user,
             title=request.POST["title"],
             content=request.POST["content"],
-            is_pinned=("is_pinned" in request.POST),
+            is_pinned="is_pinned" in request.POST
         )
 
         messages.success(request, "Announcement posted.")
@@ -357,7 +377,7 @@ def upload_resource(request, classroom_id):
             resource.file = request.FILES["file"]
             resource.save()
 
-        messages.success(request, "Resource uploaded!")
+        messages.success(request, "Resource uploaded.")
         return redirect("classroom_detail", classroom_id=classroom_id)
 
     return render(request, "classroom/upload_resource.html", {"classroom": classroom})
@@ -377,14 +397,11 @@ def class_progress(request, classroom_id):
 
     progress_records = ProgressTracking.objects.filter(classroom=classroom)
 
-    avg_score = progress_records.aggregate(Avg("average_quiz_score"))["average_quiz_score__avg"] or 0
-    avg_attendance = progress_records.aggregate(Avg("completion_percentage"))["completion_percentage__avg"] or 0
-
     return render(request, "classroom/class_progress.html", {
         "classroom": classroom,
         "progress_records": progress_records,
-        "avg_score": avg_score,
-        "avg_attendance": avg_attendance,
+        "avg_score": progress_records.aggregate(Avg("average_quiz_score"))["average_quiz_score__avg"] or 0,
+        "avg_attendance": progress_records.aggregate(Avg("completion_percentage"))["completion_percentage__avg"] or 0,
     })
 
 
@@ -398,3 +415,42 @@ def student_progress(request, classroom_id):
         "classroom": classroom,
         "progress": progress,
     })
+
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q, Count
+from .models import Attendance, Classroom, ClassMember, ProgressTracking
+# ...other imports already present...
+
+
+@login_required
+def student_attendance(request):
+    """
+    Show attendance history for the logged-in student across all classrooms.
+    Used by the 'student_attendance' link in the student dashboard.
+    """
+    records = (
+        Attendance.objects
+        .filter(student=request.user)
+        .select_related("classroom")
+        .order_by("-date")
+    )
+
+    total = records.count()
+    present = records.filter(status="present").count()
+    absences = records.filter(status="absent").count()
+
+    if total > 0:
+        attendance_rate = round((present / total) * 100, 1)
+    else:
+        attendance_rate = 0.0
+
+    # simple points logic – adjust if you want
+    attendance_points = present * 10
+
+    context = {
+        "attendance_records": records,
+        "attendance_rate": attendance_rate,
+        "absences": absences,
+        "attendance_points": attendance_points,
+    }
+    return render(request, "student/attendance.html", context)

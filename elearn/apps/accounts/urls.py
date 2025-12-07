@@ -15,6 +15,9 @@ urlpatterns = [
     # ------------------------------
     path('dashboard/', views.dashboard, name='dashboard'),
     path('profile/', views.profile_view, name='profile_view'),
+    # ALIAS used in sidebars
+    path('me/', views.profile_view, name='profile'),
+
     path('profile/edit/', views.edit_profile, name='edit_profile'),
 
     # ------------------------------
@@ -27,9 +30,27 @@ urlpatterns = [
     # ------------------------------
     # User Settings
     # ------------------------------
-    path('notifications/preferences/', 
-         views.notification_preferences, 
-         name='notification_preferences'),
+    path(
+        'notifications/preferences/',
+        views.notification_preferences,
+        name='notification_preferences'
+    ),
+
+    # ------------------------------
+    # Student Feedback page
+    # ------------------------------
+    path(
+        'feedback/',
+        views.student_feedback,
+        name='student_feedback'
+    ),
+    # ------------------------------
+# Student Dashboard + Subpages (required by templates)
+# ------------------------------
+path('student/dashboard/', views.student_dashboard, name='student_dashboard'),
+path('student/attendance/', views.student_attendance, name='student_attendance'),
+path('student/feedback/', views.student_feedback, name='student_feedback'),
+
 
     # ------------------------------
     # Search + API Endpoints

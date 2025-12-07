@@ -1,82 +1,129 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block title %}Teacher Dashboard{% endblock %}
 
 {% block content %}
-<div class="flex min-h-screen">
 
-    <aside class="w-64 bg-sidebar-DEFAULT text-sidebar-foreground p-4 border-r border-sidebar-border shadow-md">
-        <h3 class="text-2xl font-bold text-primary-DEFAULT mb-8">Pearlsquare</h3>
-        <nav class="space-y-2">
-            <a href="{% url 'dashboard' %}" class="block p-3 rounded-lg bg-sidebar-accent font-semibold">
+<div class="flex min-h-screen bg-gray-100">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-white p-6">
+
+        <h2 class="text-2xl font-bold mb-8">Teacher Panel</h2>
+
+        <nav class="space-y-3 flex flex-col">
+
+            <a href="{% url 'dashboard' %}"
+               class="block bg-gray-800 hover:bg-gray-700 p-3 rounded transition">
                 Dashboard
             </a>
-            <a href="{% url 'create_classroom' %}" class="block p-3 rounded-lg hover:bg-sidebar-accent">
+
+            <a href="{% url 'create_classroom' %}"
+               class="block bg-gray-800 hover:bg-gray-700 p-3 rounded transition">
                 Create Classroom
             </a>
-            <a href="{% url 'create_quiz' %}" class="block p-3 rounded-lg hover:bg-sidebar-accent">
-                Create Quiz
-            </a>
-            <a href="{% url 'classroom_list' %}" class="block p-3 rounded-lg hover:bg-sidebar-accent">
+
+            <a href="{% url 'classroom_list' %}"
+               class="block bg-gray-800 hover:bg-gray-700 p-3 rounded transition">
                 My Classrooms
             </a>
+
+            <a href="{% url 'create_quiz' %}"
+               class="block bg-gray-800 hover:bg-gray-700 p-3 rounded transition">
+                Create Quiz
+            </a>
+
+            <a href="{% url 'quiz_list' %}"
+               class="block bg-gray-800 hover:bg-gray-700 p-3 rounded transition">
+                Quizzes
+            </a>
+
+            <a href="{% url 'leaderboard' %}"
+               class="block bg-gray-800 hover:bg-gray-700 p-3 rounded transition">
+                Leaderboard
+            </a>
+
+            <a href="{% url 'logout' %}"
+               class="block bg-red-700 hover:bg-red-600 p-3 rounded transition">
+                Logout
+            </a>
+
         </nav>
+
     </aside>
 
+    <!-- Main Content -->
     <main class="flex-1 p-10">
-        <h1 class="text-4xl font-extrabold text-primary-DEFAULT mb-8">Teacher Dashboard</h1>
 
-        <!-- Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-10">
+            Teacher Dashboard
+        </h1>
 
-            <div class="bg-card p-6 rounded-lg shadow border text-center">
-                <p class="text-muted-foreground text-sm">Total Classrooms</p>
-                <p class="text-5xl font-extrabold">{{ classrooms.count }}</p>
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+
+            <div class="p-6 bg-white shadow rounded-lg">
+                <p class="text-gray-500">Classrooms</p>
+                <h2 class="text-3xl font-bold">{{ classrooms.count }}</h2>
             </div>
 
-            <div class="bg-card p-6 rounded-lg shadow border text-center">
-                <p class="text-muted-foreground text-sm">Total Students</p>
-                <p class="text-5xl font-extrabold">{{ students_count }}</p>
+            <div class="p-6 bg-white shadow rounded-lg">
+                <p class="text-gray-500">Total Students</p>
+                <h2 class="text-3xl font-bold">{{ total_students }}</h2>
             </div>
 
-            <div class="bg-card p-6 rounded-lg shadow border text-center">
-                <p class="text-muted-foreground text-sm">Quizzes Created</p>
-                <p class="text-5xl font-extrabold">{{ quizzes.count }}</p>
+            <div class="p-6 bg-white shadow rounded-lg">
+                <p class="text-gray-500">Quizzes Created</p>
+                <h2 class="text-3xl font-bold">{{ quizzes.count }}</h2>
+            </div>
+
+            <div class="p-6 bg-white shadow rounded-lg">
+                <p class="text-gray-500">Announcements</p>
+                <h2 class="text-3xl font-bold">{{ announcements }}</h2>
             </div>
 
         </div>
 
-        <!-- Recent Submissions -->
-        <div class="bg-card p-6 rounded-lg shadow border">
-            <h2 class="text-2xl font-bold mb-6 text-primary-DEFAULT">Recent Quiz Submissions</h2>
+        <!-- Classroom List -->
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Your Classrooms</h2>
 
-            <table class="min-w-full">
-                <thead class="bg-muted text-muted-foreground uppercase text-xs">
-                    <tr>
-                        <th class="p-3 text-left">Student</th>
-                        <th class="p-3 text-left">Quiz</th>
-                        <th class="p-3 text-left">Score</th>
-                        <th class="p-3 text-left">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for submission in recent_submissions %}
-                    <tr class="border-b hover:bg-muted/50">
-                        <td class="p-3">{{ submission.student.username }}</td>
-                        <td class="p-3">{{ submission.quiz.title }}</td>
-                        <td class="p-3 font-semibold">{{ submission.score }}</td>
-                        <td class="p-3">{{ submission.submitted_at|date:"M d, Y" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td class="p-3 text-center text-muted-foreground" colspan="4">
-                            No recent submissions.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="space-y-4 mb-10">
+            {% for c in classrooms %}
+                <div class="p-4 bg-white shadow rounded flex justify-between items-center">
+                    <div>
+                        <p class="text-xl font-semibold">{{ c.name }}</p>
+                        <p class="text-gray-500 text-sm">Code: {{ c.code }}</p>
+                    </div>
+
+                    <a href="{% url 'classroom_detail' c.id %}"
+                       class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+                        Open
+                    </a>
+                </div>
+            {% empty %}
+                <p class="text-gray-500">No classrooms created yet.</p>
+            {% endfor %}
         </div>
+
+        <!-- Quiz List -->
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Recent Quizzes</h2>
+
+        <div class="space-y-4">
+            {% for q in quizzes %}
+                <div class="p-4 bg-white shadow rounded flex justify-between items-center">
+                    <p class="text-lg">{{ q.title }}</p>
+
+                    <a href="{% url 'teacher_view_responses' q.id %}"
+                       class="text-blue-600 hover:text-blue-800 font-semibold">
+                        View Responses
+                    </a>
+                </div>
+            {% empty %}
+                <p class="text-gray-500">No quizzes created.</p>
+            {% endfor %}
+        </div>
+
     </main>
 
 </div>
+
 {% endblock %}

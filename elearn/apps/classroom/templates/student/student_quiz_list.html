@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Available Quizzes{% endblock %}
+
+{% block content %}
+<div class="p-8">
+    <h1 class="text-3xl font-bold mb-6">Available Quizzes</h1>
+
+    {% if quizzes %}
+        <ul class="space-y-4">
+        {% for quiz in quizzes %}
+            <li class="p-4 bg-white shadow rounded flex justify-between">
+                <span class="font-semibold">{{ quiz.title }}</span>
+
+                <!-- START QUIZ BUTTON (correct flow) -->
+                <a href="{% url 'student_take_quiz' quiz.id %}"
+                   class="text-blue-600 font-bold">
+                    Take Quiz
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No quizzes yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

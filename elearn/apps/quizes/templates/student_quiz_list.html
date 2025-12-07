@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Available Quizzes{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <h1 class="text-2xl font-bold mb-4">Available Quizzes</h1>
+
+    {% for quiz in quizzes %}
+        <div class="p-4 mb-3 bg-white shadow rounded flex justify-between">
+            <span>{{ quiz.title }}</span>
+
+            <a href="{% url 'student_take_quiz' quiz.id %}"
+               class="text-blue-600 font-semibold">
+               Start
+            </a>
+        </div>
+    {% empty %}
+        <p>No quizzes available.</p>
+    {% endfor %}
+</div>
+{% endblock %}

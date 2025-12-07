@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto bg-white p-6 shadow rounded">
+
+    <h2 class="text-2xl font-bold mb-4">
+        Add Question to: {{ quiz.title }}
+    </h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label class="block font-semibold">Question</label>
+        <textarea name="text" class="w-full border p-2 rounded mb-3" required></textarea>
+
+        <label class="block font-semibold">Question Type</label>
+        <select name="question_type" class="w-full border p-2 rounded mb-3" required>
+            <option value="mcq">Multiple Choice</option>
+            <option value="text">Text Answer</option>
+        </select>
+
+        <h3 class="font-semibold mt-3">MCQ Options</h3>
+
+        <input type="text" name="option_a" class="w-full border p-2 rounded mb-2" placeholder="Option A">
+        <input type="text" name="option_b" class="w-full border p-2 rounded mb-2" placeholder="Option B">
+        <input type="text" name="option_c" class="w-full border p-2 rounded mb-2" placeholder="Option C">
+        <input type="text" name="option_d" class="w-full border p-2 rounded mb-2" placeholder="Option D">
+
+        <label class="block font-semibold mt-2">Correct Answer</label>
+        <input type="text" name="correct" class="w-full border p-2 rounded mb-3" required>
+
+        <button type="submit" name="add_more"
+                class="bg-green-600 text-white py-2 px-4 rounded w-full mb-2">
+            Add Question & Continue
+        </button>
+
+        <button type="submit"
+                class="bg-blue-600 text-white py-2 px-4 rounded w-full">
+            Finish Quiz
+        </button>
+    </form>
+
+</div>
+
+{% endblock %}

@@ -5,23 +5,40 @@
 <div class="max-w-xl mx-auto mt-10 bg-white shadow p-6 rounded-lg">
     <h2 class="text-2xl font-bold mb-4">Create a Classroom</h2>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
+        <!-- Classroom Name -->
         <label class="block mb-2 font-semibold">Classroom Name</label>
         <input type="text" name="name" class="w-full p-2 border rounded mb-4" required>
 
+        <!-- Description -->
         <label class="block mb-2 font-semibold">Description</label>
         <textarea name="description" class="w-full p-2 border rounded mb-4"></textarea>
 
+        <!-- Subject -->
+        <label class="block mb-2 font-semibold">Subject</label>
+        <input type="text" name="subject" class="w-full p-2 border rounded mb-4" required>
+
+        <!-- Grade Level -->
+        <label class="block mb-2 font-semibold">Grade Level</label>
+        <input type="text" name="grade_level" class="w-full p-2 border rounded mb-4">
+
+        <!-- Room Number -->
+        <label class="block mb-2 font-semibold">Room Number</label>
+        <input type="text" name="room_number" class="w-full p-2 border rounded mb-4">
+
+        <!-- Schedule -->
+        <label class="block mb-2 font-semibold">Schedule</label>
+        <textarea name="schedule" class="w-full p-2 border rounded mb-4"></textarea>
+
+        <!-- Optional Banner Image -->
+        <label class="block mb-2 font-semibold">Banner Image (optional)</label>
+        <input type="file" name="banner_image" class="w-full p-2 border rounded mb-4">
+
         <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg">
-            Create
+            Create Classroom
         </button>
     </form>
 </div>
-<div class="mb-4">
-    <label class="block font-semibold mb-1">Subject</label>
-    <input type="text" name="subject" class="w-full border p-2 rounded" required>
-</div>
-
 {% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Start Quiz{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <h1 class="text-2xl font-bold mb-4">{{ quiz.title }}</h1>
+
+    <form method="POST" action="{% url 'submit_quiz' quiz.id %}">
+        {% csrf_token %}
+
+        {% for q in questions %}
+            <div class="mb-6 bg-white p-4 shadow rounded">
+                <p class="font-semibold mb-2">{{ q.text }}</p>
+
+                <label><input type="radio" name="{{ q.id }}" value="A"> {{ q.option_a }}</label><br>
+                <label><input type="radio" name="{{ q.id }}" value="B"> {{ q.option_b }}</label><br>
+                <label><input type="radio" name="{{ q.id }}" value="C"> {{ q.option_c }}</label><br>
+                <label><input type="radio" name="{{ q.id }}" value="D"> {{ q.option_d }}</label><br>
+            </div>
+        {% endfor %}
+
+        <button class="bg-green-600 text-white px-4 py-2 rounded">
+            Submit Quiz
+        </button>
+    </form>
+</div>
+{% endblock %}

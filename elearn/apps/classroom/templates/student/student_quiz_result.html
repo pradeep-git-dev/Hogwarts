@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Quiz Result{% endblock %}
+
+{% block content %}
+<div class="p-8">
+    <h1 class="text-3xl font-bold mb-4">{{ quiz.title }} - Your Result</h1>
+
+    <p class="text-xl mb-6">
+        Score: <strong>{{ score.score }}</strong>
+    </p>
+
+    <h2 class="text-2xl font-bold mb-4">Your Answers</h2>
+
+    {% for r in responses %}
+        <div class="p-4 mb-2 bg-gray-100 rounded">
+            <p><strong>Q:</strong> {{ r.question.text }}</p>
+            <p><strong>Your Answer:</strong> {{ r.student_answer }}</p>
+            <p><strong>Correct:</strong> {{ r.correct_answer }}</p>
+            <p>
+                {% if r.is_correct %}
+                    <span class="text-green-600 font-bold">Correct</span>
+                {% else %}
+                    <span class="text-red-600 font-bold">Wrong</span>
+                {% endif %}
+            </p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
